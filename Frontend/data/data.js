@@ -374,3 +374,117 @@ HOSPITALS_PUNE = [
         "notes": "Critical for Mumbai-Pune expressway accidents. At old+new expressway junction."
     },
 ]
+
+
+HOSPITALS_PUNE = [
+    {
+        "id": "H01",
+        "name": "Ruby Hall Clinic (Sassoon Road)",
+        "mapped_to": "Rangehills Dispensary",
+        "lat": 18.5508, "lng": 73.8415,
+    },
+    {
+        "id": "H02",
+        "name": "Deenanath Mangeshkar Hospital",
+        "mapped_to": "Dr. Jain's Dental Care",
+        "lat": 18.5428, "lng": 73.8386,
+    },
+    {
+        "id": "H03",
+        "name": "Sahyadri Super Speciality Hospital (Deccan)",
+        "mapped_to": "Dalvi Hospital",
+        "lat": 18.5330, "lng": 73.8486,
+    },
+    {
+        "id": "H04",
+        "name": "Apollo Jehangir Hospital",
+        "mapped_to": "Sancheti Hospital",
+        "lat": 18.5299, "lng": 73.8529,
+    },
+    {
+        "id": "H05",
+        "name": "Kokilaben Hospital Pune (Kharadi)",
+        "mapped_to": "ASG Eye Hospital",
+        "lat": 18.5289, "lng": 73.8436,
+    },
+    {
+        "id": "H06",
+        "name": "Manipal Hospital Baner",
+        "mapped_to": "Wagh Eye Clinic",
+        "lat": 18.5252, "lng": 73.8437,
+    },
+    {
+        "id": "H07",
+        "name": "Nanavati Max Hospital (Viman Nagar)",
+        "mapped_to": "Dr. Karve Children's Hospital",
+        "lat": 18.5252, "lng": 73.8499,
+    },
+    {
+        "id": "H08",
+        "name": "DPU Super Specialty Hospital (Pimpri)",
+        "mapped_to": "Pune Fertility Center",
+        "lat": 18.5312, "lng": 73.8465,
+    },
+
+    {
+        "id": "H09",
+        "name": "Sancheti Hospital",
+        "mapped_to": "Pandit Clinic",
+        "lat": 18.5233, "lng": 73.8496,
+    },
+    {
+        "id": "H10",
+        "name": "Sahyadri Super Speciality (Hadapsar)",
+        "mapped_to": "The Urology Clinic (Dr. Ketan Pai)",
+        "lat": 18.5223, "lng": 73.8517,
+    },
+    {
+        "id": "H11",
+        "name": "Sahyadri Super Speciality (Nagar Road)",
+        "mapped_to": "eshavari clinic",
+        "lat": 18.5265, "lng": 73.8540,
+    },
+    {
+        "id": "H12",
+        "name": "Lokmanya Hospital (Chinchwad)",
+        "mapped_to": "Kamla Nehru Hospital",
+        "lat": 18.5227, "lng": 73.8622,
+    },
+    {
+        "id": "H13",
+        "name": "AIMS Multispeciality Hospital (Aundh)",
+        "mapped_to": "Milenkari Clinic",
+        "lat": 18.5242, "lng": 73.8610,
+    },
+    {
+        "id": "H14",
+        "name": "VishwaRaj Hospital (Loni Kalbhor)",
+        "mapped_to": "Surya Sahyadri Hospital",
+        "lat": 18.5212, "lng": 73.8558,
+    },
+
+    {
+        "id": "H15",
+        "name": "Sassoon General Hospital (Government)",
+        "mapped_to": "Manish Clinic",
+        "lat": 18.5196, "lng": 73.8574,
+    },
+    {
+        "id": "H16",
+        "name": "KEM Hospital (Rasta Peth)",
+        "mapped_to": "Paras Clinic",
+        "lat": 18.5215, "lng": 73.8625,
+    },
+    {
+        "id": "H17",
+        "name": "Surya Sahyadri Hospital (Kasba Peth)",
+        "mapped_to": "Dr. Saha Clinic",
+        "lat": 18.5152, "lng": 73.8612,
+    },
+    {
+        "id": "H18",
+        "name": "Pawana Hospital (Somatane / Maval)",
+        "mapped_to": "Naik Hospital, Pune",
+        "lat": 18.5103, "lng": 73.8593,
+    },
+]

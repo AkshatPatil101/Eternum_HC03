@@ -1,5 +1,118 @@
 import React, { useState, useEffect } from "react";
 
+const HOSPITALS_PUNE = [
+    {
+        "id": "H01",
+        "name": "Ruby Hall Clinic (Sassoon Road)",
+        "mapped_to": "Rangehills Dispensary",
+        "lat": 18.5508, "lng": 73.8415,
+    },
+    {
+        "id": "H02",
+        "name": "Deenanath Mangeshkar Hospital",
+        "mapped_to": "Dr. Jain's Dental Care",
+        "lat": 18.5428, "lng": 73.8386,
+    },
+    {
+        "id": "H03",
+        "name": "Sahyadri Super Speciality Hospital (Deccan)",
+        "mapped_to": "Dalvi Hospital",
+        "lat": 18.5330, "lng": 73.8486,
+    },
+    {
+        "id": "H04",
+        "name": "Apollo Jehangir Hospital",
+        "mapped_to": "Sancheti Hospital",
+        "lat": 18.5299, "lng": 73.8529,
+    },
+    {
+        "id": "H05",
+        "name": "Kokilaben Hospital Pune (Kharadi)",
+        "mapped_to": "ASG Eye Hospital",
+        "lat": 18.5289, "lng": 73.8436,
+    },
+    {
+        "id": "H06",
+        "name": "Manipal Hospital Baner",
+        "mapped_to": "Wagh Eye Clinic",
+        "lat": 18.5252, "lng": 73.8437,
+    },
+    {
+        "id": "H07",
+        "name": "Nanavati Max Hospital (Viman Nagar)",
+        "mapped_to": "Dr. Karve Children's Hospital",
+        "lat": 18.5252, "lng": 73.8499,
+    },
+    {
+        "id": "H08",
+        "name": "DPU Super Specialty Hospital (Pimpri)",
+        "mapped_to": "Pune Fertility Center",
+        "lat": 18.5312, "lng": 73.8465,
+    },
+
+    {
+        "id": "H09",
+        "name": "Sancheti Hospital",
+        "mapped_to": "Pandit Clinic",
+        "lat": 18.5233, "lng": 73.8496,
+    },
+    {
+        "id": "H10",
+        "name": "Sahyadri Super Speciality (Hadapsar)",
+        "mapped_to": "The Urology Clinic (Dr. Ketan Pai)",
+        "lat": 18.5223, "lng": 73.8517,
+    },
+    {
+        "id": "H11",
+        "name": "Sahyadri Super Speciality (Nagar Road)",
+        "mapped_to": "eshavari clinic",
+        "lat": 18.5265, "lng": 73.8540,
+    },
+    {
+        "id": "H12",
+        "name": "Lokmanya Hospital (Chinchwad)",
+        "mapped_to": "Kamla Nehru Hospital",
+        "lat": 18.5227, "lng": 73.8622,
+    },
+    {
+        "id": "H13",
+        "name": "AIMS Multispeciality Hospital (Aundh)",
+        "mapped_to": "Milenkari Clinic",
+        "lat": 18.5242, "lng": 73.8610,
+    },
+    {
+        "id": "H14",
+        "name": "VishwaRaj Hospital (Loni Kalbhor)",
+        "mapped_to": "Surya Sahyadri Hospital",
+        "lat": 18.5212, "lng": 73.8558,
+    },
+
+    {
+        "id": "H15",
+        "name": "Sassoon General Hospital (Government)",
+        "mapped_to": "Manish Clinic",
+        "lat": 18.5196, "lng": 73.8574,
+    },
+    {
+        "id": "H16",
+        "name": "KEM Hospital (Rasta Peth)",
+        "mapped_to": "Paras Clinic",
+        "lat": 18.5215, "lng": 73.8625,
+    },
+    {
+        "id": "H17",
+        "name": "Surya Sahyadri Hospital (Kasba Peth)",
+        "mapped_to": "Dr. Saha Clinic",
+        "lat": 18.5152, "lng": 73.8612,
+    },
+    {
+        "id": "H18",
+        "name": "Pawana Hospital (Somatane / Maval)",
+        "mapped_to": "Naik Hospital, Pune",
+        "lat": 18.5103, "lng": 73.8593,
+    },
+]
+
 const PatientIntakeDashboard = () => {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const availableSymptoms = [
@@ -7,6 +120,8 @@ const PatientIntakeDashboard = () => {
     "Road Accident", "Bleeding", "Breathlessness", "Wheezing",
     "Confusion", "Drug Intake", "Pregnancy", "Diabetes", "ECG Abnormal"
   ];
+
+
 
   // Vitals State
   const [heartRate, setHeartRate] = useState("");
@@ -76,24 +191,80 @@ const PatientIntakeDashboard = () => {
     );
   };
 
-  async function sendTriageData(patientData) {
-    try {
-        const response = await fetch("http://localhost:8000/triage", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(patientData)
-        });
+// inside PatientIntakeDashboard
+async function sendTriageData(patientData) {
+  try {
+    const response = await fetch("http://localhost:8000/triage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patientData)
+    });
 
-        const result = await response.json();
-        console.log("Server response:", result);
-
-        return result;
-    } catch (error) {
-        console.error("Error sending data:", error);
+    const result = await response.json();
+    
+    // Check nested structure from your ML service
+    if (!result || !result.hospitals || !result.hospitals.matched_hospitals) {
+      console.error("Invalid response format", result);
+      return;
     }
-}    
+
+    // 1. GENERATE RANDOM START ON EVERY CLICK
+    // This creates a different mission origin within your specified Pune bounds
+    const freshLat = 18.5194 + (Math.random() * 0.04 - 0.02);
+    const freshLng = 73.8519 + (Math.random() * 0.008 - 0.004);
+
+    // Update state so the UI (and ptData for next time) knows the new "current" location
+
+    // 2. DISTANCE HELPER (Haversine)
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; 
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    };
+
+    // 3. MAP AND RE-SORT BY PROXIMITY
+    // Even if ML suggests a hierarchy, we find the closest one to our NEW random point
+    const enrichedHospitals = result.hospitals.matched_hospitals.map(hospital => {
+      const localData = HOSPITALS_PUNE.find(h => h.id === hospital.hospital_id);
+      return {
+        ...hospital,
+        real_lat: localData?.lat || 0,
+        real_lng: localData?.lng || 0,
+        mapped_to: localData?.mapped_to || hospital.name,
+        dist_km: calculateDistance(freshLat, freshLng, localData?.lat || 0, localData?.lng || 0)
+      };
+    });
+
+    enrichedHospitals.sort((a, b) => a.dist_km - b.dist_km);
+    const bestChoice = enrichedHospitals[0];
+
+    // 4. DISPATCH PAYLOAD
+    const dispatchPayload = {
+      hospital_name: bestChoice.mapped_to,
+      severity: result.severity || "CRITICAL",
+      coordinates: { lng: bestChoice.real_lng, lat: bestChoice.real_lat }, 
+      user_location: { lng: freshLng, lat: freshLat }, 
+      distance_km: bestChoice.dist_km.toFixed(2),
+      timestamp: new Date().toISOString()
+    };
+
+    console.log(`🚀 New Mission: ${freshLat.toFixed(4)}, ${freshLng.toFixed(4)} -> ${bestChoice.mapped_to}`);
+
+    // 5. SEND TO WEBSOCKET DISPATCHER (Port 8080)
+    await fetch("http://localhost:8080/dispatch-route", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dispatchPayload)
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Critical Triage Error:", error);
+  }
+}
 
   return (
     <div className="bg-surface text-on-surface min-h-screen font-body">

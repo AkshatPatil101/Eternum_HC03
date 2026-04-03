@@ -36,7 +36,7 @@ app.post("/dispatch-route", (req, res) => {
     });
 
     console.log("Data pushed");
-  }, 4000);
+  }, 1000);
 });
 
 const PORT = 8080;
