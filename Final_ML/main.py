@@ -16,17 +16,16 @@ sys.path.append(os.path.join(BASE_DIR, "hospital"))
 
 import json
 from src.inference import TriagePredictor
-from hospital.router import HospitalRouter
+from hospital.router import route_patient, print_routing_result
 
 def main():
     print("====================================")
-    print("Ignisia Emergency Triage System")
+    print("Ignisia Emergency Triage API Server Simulator")
     print("====================================")
     
     # Initialize Core Engines
     try:
         predictor = TriagePredictor()
-        router = HospitalRouter()
     except Exception as e:
         print(f"Error initializing system: {e}")
         print("Please ensure you have run 'python pipeline/src/train_models.py' first!")
@@ -40,7 +39,7 @@ def main():
         "hr": 145, 
         "bp_sys": 80, 
         "spo2": 88, 
-        "gcs": 13, 
+        "gcs": 8, 
         "temp": 40.5, 
         "rr": 32,
         "confusion": 1, 
@@ -62,26 +61,39 @@ def main():
         "gender": 0
     }
     
+    # --- Scenario 1 ---
     print("\n>>> Scenario 1: Unstable Patient")
     res1 = predictor.run_pipeline(pt_critical)
     print("\n[AI Inference Output]:")
     print(json.dumps(res1, indent=2))
     
-    routes1 = router.find_best_hospitals(res1)
-    print("\n[Hospital Routing Readiness Output (Top 3 Eligible)]: ")
-    for r in routes1[:3]:
-        print(f" - {r['name']} | Capability Score: {r['capability_score']} | Docs Missing: {r['docs_missing']}")
+    if res1["status"] == "success":
+        amburoute_input_1 = {
+            "patient_id": "P_UNSTABLE",
+            "severity": res1["severity"]["tier"],
+            "specialty_needed": res1["care_plan"]["specialists_needed"],
+            "equipment_needed": res1["care_plan"]["equipment_needed"],
+            "vitals": pt_critical
+        }
+        routes1 = route_patient(amburoute_input_1)
+        print_routing_result(routes1)
 
-
+    # --- Scenario 2 ---
     print("\n\n>>> Scenario 2: Stable Patient")
     res2 = predictor.run_pipeline(pt_stable)
     print("\n[AI Inference Output]:")
     print(json.dumps(res2, indent=2))
     
-    routes2 = router.find_best_hospitals(res2)
-    print("\n[Hospital Routing Readiness Output (Top 3 Eligible)]: ")
-    for r in routes2[:3]:
-        print(f" - {r['name']} | Capability Score: {r['capability_score']} | Docs Missing: {r['docs_missing']}")
+    if res2["status"] == "success":
+        amburoute_input_2 = {
+            "patient_id": "P_STABLE",
+            "severity": res2["severity"]["tier"],
+            "specialty_needed": res2["care_plan"]["specialists_needed"],
+            "equipment_needed": res2["care_plan"]["equipment_needed"],
+            "vitals": pt_stable
+        }
+        routes2 = route_patient(amburoute_input_2)
+        print_routing_result(routes2)
 
 if __name__ == "__main__":
     main()
