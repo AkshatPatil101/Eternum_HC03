@@ -1,23 +1,18 @@
 import { useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 
-const FROM = { lng: 73.8446, lat: 18.5308 };
-const TO = { lng: 73.8553, lat: 18.5174 };
+const SPEED = 35; // m/s
 
-const DURATION = 40000; // 20 seconds to finish the route
-
-function easeInOut(t) {
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
-
-function interpolateAlongRoute(coords, progress) {
-  const total = coords.length - 1;
-  const exact = progress * total;
-  const idx = Math.min(Math.floor(exact), total - 1);
-  const t = exact - idx;
-  const a = coords[idx];
-  const b = coords[idx + 1] || coords[total];
-  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+function getDistance(a, b) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(b[1] - a[1]);
+  const dLng = toRad(b[0] - a[0]);
+  const lat1 = toRad(a[1]);
+  const lat2 = toRad(b[1]);
+  const x = dLng * Math.cos((lat1 + lat2) / 2);
+  const y = dLat;
+  return Math.sqrt(x * x + y * y) * R;
 }
 
 function bearing(a, b) {
@@ -27,104 +22,168 @@ function bearing(a, b) {
   const lat1 = toRad(a[1]);
   const lat2 = toRad(b[1]);
   const x = Math.sin(dLng) * Math.cos(lat2);
-  const y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  const y =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
   return (toDeg(Math.atan2(x, y)) + 360) % 360;
 }
 
-export function useRouting(mapRef, ambulanceStateRef) {
+export default function useRouting(mapRef, ambulanceStateRef) {
   const [status, setStatus] = useState("idle");
-  const [info, setInfo] = useState(null);
   const markersRef = useRef([]);
-  const animFrameRef = useRef(null);
-  const travelledCoordsRef = useRef([]);
+  const animRefs = useRef([]);
+  const trails = useRef([[], []]);
 
   function clearRoute() {
     const map = mapRef.current;
     if (!map) return;
-    cancelAnimationFrame(animFrameRef.current);
+
+    animRefs.current.forEach((id) => cancelAnimationFrame(id));
+    animRefs.current = [];
+
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (map.getLayer("route-line")) map.removeLayer("route-line");
-    if (map.getLayer("route-travelled")) map.removeLayer("route-travelled");
-    if (map.getSource("route")) map.removeSource("route");
-    if (map.getSource("route-travelled")) map.removeSource("route-travelled");
+    ["route1", "route2", "trail1", "trail2"].forEach((id) => {
+      if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource(id)) map.removeSource(id);
+    });
 
-    travelledCoordsRef.current = [];
-    ambulanceStateRef.current.visible = false;
+    trails.current = [[], []];
+    ambulanceStateRef.current = ambulanceStateRef.current.map(() => ({
+      visible: false
+    }));
+
     setStatus("idle");
-    setInfo(null);
     map.triggerRepaint();
   }
 
-  function startAnimation(coords) {
+  async function fetchRoute(from, to) {
+    const res = await fetch(
+      `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`
+    );
+    const data = await res.json();
+    return data.routes[0].geometry.coordinates;
+  }
+
+  function buildDistances(coords) {
+    const distances = [0];
+    for (let i = 1; i < coords.length; i++) {
+      distances[i] = distances[i - 1] + getDistance(coords[i - 1], coords[i]);
+    }
+    return distances;
+  }
+
+  function animateAmbulance(coords, distances, totalDistance, index, trailId) {
     const map = mapRef.current;
     let startTime = null;
 
     function animate(now) {
       if (!startTime) startTime = now;
       const elapsed = now - startTime;
-      const progress = Math.min(elapsed / DURATION, 1);
-      const eased = easeInOut(progress);
+      const distanceTravelled = (elapsed / 1000) * SPEED;
 
-      const pos = interpolateAlongRoute(coords, eased);
-      const nextPos = interpolateAlongRoute(coords, Math.min(eased + 0.001, 1));
-      const rot = bearing(pos, nextPos);
+      if (distanceTravelled >= totalDistance) {
+        ambulanceStateRef.current[index] = {
+          lngLat: coords[coords.length - 1],
+          rotation: 0,
+          visible: true
+        };
+        map.triggerRepaint();
+        return;
+      }
 
-      // Push updates to the 3D Layer Ref
-      ambulanceStateRef.current.lngLat = pos;
-      ambulanceStateRef.current.rotation = rot;
-      ambulanceStateRef.current.visible = true;
+      let i = 1;
+      while (distances[i] < distanceTravelled) i++;
+      const prevDist = distances[i - 1];
+      const nextDist = distances[i];
+      const t = (distanceTravelled - prevDist) / (nextDist - prevDist);
 
-      // Update the "trail" on the map
-      travelledCoordsRef.current.push(pos);
-      map.getSource("route-travelled")?.setData({
+      const a = coords[i - 1];
+      const b = coords[i];
+
+      const pos = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+      const rot = bearing(a, b);
+
+      ambulanceStateRef.current[index] = {
+        lngLat: pos,
+        rotation: rot,
+        visible: true
+      };
+
+      trails.current[index].push(pos);
+
+      map.getSource(trailId)?.setData({
         type: "Feature",
-        geometry: { type: "LineString", coordinates: travelledCoordsRef.current }
+        geometry: { type: "LineString", coordinates: trails.current[index] }
       });
 
-      // Force the 3D custom layer to render the new position
       map.triggerRepaint();
-
-      if (progress < 1) {
-        animFrameRef.current = requestAnimationFrame(animate);
-      } else {
-        setStatus("done");
-      }
+      animRefs.current[index] = requestAnimationFrame(animate);
     }
-    animFrameRef.current = requestAnimationFrame(animate);
+
+    animRefs.current[index] = requestAnimationFrame(animate);
   }
 
-  async function drawRoute() {
+  async function drawRoute(routeData) {
+    // routeData = [{ from, to }, { from, to }]
     const map = mapRef.current;
     if (!map) return;
+
     clearRoute();
     setStatus("loading");
 
     try {
-      const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${FROM.lng},${FROM.lat};${TO.lng},${TO.lat}?overview=full&geometries=geojson`);
-      const data = await res.json();
-      const route = data.routes[0];
-      const coords = route.geometry.coordinates;
+      const coordsArray = await Promise.all(
+        routeData.map((r) => fetchRoute(r.from, r.to))
+      );
 
-      markersRef.current = [
-        new maplibregl.Marker({ color: "#1976d2" }).setLngLat([FROM.lng, FROM.lat]).addTo(map),
-        new maplibregl.Marker({ color: "#d32f2f" }).setLngLat([TO.lng, TO.lat]).addTo(map)
-      ];
+      const distancesArray = coordsArray.map((c) => buildDistances(c));
+      const totals = distancesArray.map((d) => d[d.length - 1]);
 
-      map.addSource("route", { type: "geojson", data: { type: "Feature", geometry: route.geometry } });
-      map.addLayer({ id: "route-line", type: "line", source: "route", paint: { "line-color": "#ccc", "line-width": 4 } });
+      // markers
+      markersRef.current = routeData.flatMap((r) => [
+        new maplibregl.Marker({ color: "blue" }).setLngLat([r.from.lng, r.from.lat]).addTo(map),
+        new maplibregl.Marker({ color: "red" }).setLngLat([r.to.lng, r.to.lat]).addTo(map)
+      ]);
 
-      map.addSource("route-travelled", { type: "geojson", data: { type: "Feature", geometry: { type: "LineString", coordinates: [coords[0]] } } });
-      map.addLayer({ id: "route-travelled", type: "line", source: "route-travelled", paint: { "line-color": "#2196f3", "line-width": 5 } });
+      // routes
+      coordsArray.forEach((coords, i) => {
+        const id = `route${i + 1}`;
+        const color = i === 0 ? "#2196f3" : "#4caf50";
 
-      setInfo({ distKm: (route.distance / 1000).toFixed(1), durMin: Math.round(route.duration / 60) });
+        map.addSource(id, {
+          type: "geojson",
+          data: { type: "Feature", geometry: { type: "LineString", coordinates: coords } }
+        });
+
+        map.addLayer({ id, type: "line", source: id, paint: { "line-color": color, "line-width": 8 } });
+
+        // trails
+        const trailId = `trail${i + 1}`;
+        trails.current[i] = [coords[0]];
+        map.addSource(trailId, {
+          type: "geojson",
+          data: { type: "Feature", geometry: { type: "LineString", coordinates: [coords[0]] } }
+        });
+        map.addLayer({ id: trailId, type: "line", source: trailId, paint: { "line-color": "#ccc", "line-width": 6 } });
+      });
+
+      ambulanceStateRef.current = coordsArray.map((c) => ({
+        lngLat: c[0],
+        rotation: 0,
+        visible: true
+      }));
+
       setStatus("animating");
-      startAnimation(coords);
+
+      coordsArray.forEach((coords, i) => {
+        animateAmbulance(coords, distancesArray[i], totals[i], i, `trail${i + 1}`);
+      });
     } catch (err) {
       setStatus("error");
     }
   }
 
-  return { drawRoute, clearRoute, status, info };
+  return { drawRoute, clearRoute, status };
 }
