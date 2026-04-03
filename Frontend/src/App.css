@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.fill-icon {
+    font-variation-settings: 'FILL' 1;
+}
+.glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+}
+.glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+}
+.hero-gradient {
+    background: linear-gradient(135deg, #031632 0%, #1a2b48 100%);
+}
+.premium-gradient {
+    background: linear-gradient(135deg, #031632 0%, #1a2b48 100%);
+}
+.grid-bg {
+    background-image: radial-gradient(circle, #1a2b48 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.05;
+}
+.animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+}
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.map-container {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCjNUQBNOrnQlzo3ftqm0Jj5Sf9zEHlPApapd-rWsAHREzkweiTw_9CYhTv0Q1ditUuX_ZeSECGx-Bj0Bt8PO7POBqc-z_bqkzmSsJQomNayIc_BfQdsTPJoYLd2iOdvLwmzJMYZTMZiOtH_hMgQBIcZavjo66Nz3LSP9ywNFDbGPVfh9g72hlfa8EbmJQHOY5J3MiQs5DLwzmPUVmmjbneZOAk6wLVp7ULto1TBRxjXe-SqAaEas8383mWYxhNRGYTWKlH6ZooUH6J);
+    background-size: cover;
+    background-position: center;
+}
