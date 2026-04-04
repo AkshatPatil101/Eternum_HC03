@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚑 Sentinel — Ignisia
+# 🚑 Sentinel - Ignisia
 
 ### Golden-Hour Emergency Triage & Constraint-Based Hospital Routing System
 
@@ -12,13 +12,13 @@
 [![MapLibre](https://img.shields.io/badge/MapLibre--GL-3D--Map-8B5CF6?style=for-the-badge)](https://maplibre.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-**A real-time AI dispatch system that predicts what a patient needs before arrival and routes the ambulance to the nearest hospital that is actually capable of treating them — right now.**
+**A real-time AI dispatch system that predicts what a patient needs before arrival and routes the ambulance to the nearest hospital that is actually capable of treating them - right now.**
 
 </div>
 
 <div align="center">
 
-![Sentinel AI — Ignisia Platform](sentinel.png)
+![Sentinel AI - Ignisia Platform](sentinel.png)
 
 </div>
 
@@ -39,9 +39,9 @@
 
 ## 🚨 The Problem
 
-During medical emergencies, ambulances are dispatched to the **nearest hospital** — only to arrive and find the required ventilator is occupied, the specialist is off-duty, or the ICU is at capacity. This reactive routing wastes the most critical minutes of a patient's **golden hour.**
+During medical emergencies, ambulances are dispatched to the **nearest hospital** - only to arrive and find the required ventilator is occupied, the specialist is off-duty, or the ICU is at capacity. This reactive routing wastes the most critical minutes of a patient's **golden hour.**
 
-The problem compounds during mass casualty events — a single accident floods one trauma center while capable facilities nearby sit underutilized.
+The problem compounds during mass casualty events - a single accident floods one trauma center while capable facilities nearby sit underutilized.
 
 | Challenge | Status Quo | Sentinel AI |
 |-----------|-----------|-------------|
@@ -90,11 +90,11 @@ The problem compounds during mass casualty events — a single accident floods o
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 **Prerequisites:** Python 3.10+ · Node.js 18+ · npm 9+
 
-### 1 — ML Service (AI Triage + Routing API)
+### 1 -  ML Service (AI Triage + Routing API)
 ```bash
 cd ML_Service
 pip install fastapi uvicorn xgboost lightgbm scikit-learn pandas numpy
@@ -102,14 +102,14 @@ python main.py
 # → http://localhost:8000
 ```
 
-### 2 — Backend (WebSocket Bridge)
+### 2 - Backend (WebSocket Bridge)
 ```bash
 cd Backend
 npm install && npm run dev
 # → ws://localhost:8080
 ```
 
-### 3 — Frontend (React Dashboard)
+### 3 - Frontend (React Dashboard)
 ```bash
 cd Frontend
 npm install && npm run dev
@@ -125,11 +125,11 @@ npm install && npm run dev
 ```
 Eternum_Latest/
 │
-├── ML_Service/                     # 🧠 Python FastAPI — AI Triage + Routing
-│   ├── main.py                     # Entry point — /triage endpoint
+├── ML_Service/                     # 🧠 Python FastAPI - AI Triage + Routing
+│   ├── main.py                     # Entry point - /triage endpoint
 │   ├── models/                     # Pre-trained model files (.json, .pkl)
 │   ├── src/
-│   │   ├── inference.py            # TriagePredictor — full pipeline class
+│   │   ├── inference.py            # TriagePredictor - full pipeline class
 │   │   ├── feature_engineering.py  # Preprocessor (KNNImputer + StandardScaler)
 │   │   ├── diagnosis_mappings.py   # Emergency configs, severity tiers, care plans
 │   │   └── train_models.py         # XGBoost + LightGBM training script
@@ -137,12 +137,12 @@ Eternum_Latest/
 │       ├── hospitals_db.py         # 18 Pune hospitals, 3 tiers, live-simulated beds
 │       └── router.py               # Constraint-based routing + soft reservation engine
 │
-├── Backend/                        # 🔌 Node.js — WebSocket Bridge
+├── Backend/                        # 🔌 Node.js - WebSocket Bridge
 │   └── src/server.js               # Express + WS → /dispatch-route relay
 │
 ├── Frontend/                       # 🖥️ React 19 + Vite + TailwindCSS
 │   ├── src/
-│   │   ├── App.jsx                 # React Router — 7 page routes
+│   │   ├── App.jsx                 # React Router - 7 page routes
 │   │   └── components/
 │   │       ├── Map3D.jsx           # MapLibre GL + Three.js 3D ambulance layer
 │   │       └── Userrouting.jsx     # OSRM routing hook + animation engine
@@ -190,14 +190,14 @@ Eternum_Latest/
 | [**ML Pipeline**](docs/ml-pipeline.md) | Feature engineering, ensemble architecture, severity scoring, diagnosis mappings |
 | [**Routing Engine**](docs/routing-engine.md) | Hospital database, scoring weights, hard filters, soft reservation system |
 | [**API Reference**](docs/api-reference.md) | Full endpoint docs with request/response schemas and examples |
-| [**Dashboard Guide**](docs/dashboard-guide.md) | All 7 pages — layout, components, interactions, data flow |
+| [**Dashboard Guide**](docs/dashboard-guide.md) | All 7 pages - layout, components, interactions, data flow |
 | [**Installation**](docs/installation.md) | Detailed setup, environment config, model training, troubleshooting |
 
 ---
 
 <div align="center">
 
-**Built for HC03 — Golden-Hour Emergency Triage & Hospital Routing**
+**Built for HC03 - Golden-Hour Emergency Triage & Hospital Routing**
 
 *Sentinel AI · Ignisia Emergency Response Platform*
 
