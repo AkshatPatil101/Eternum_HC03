@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 
-const SPEED = 25; 
-const BLOCK_THRESHOLD = 300; 
+const SPEED = 25;
+const BLOCK_THRESHOLD = 200;
 const OSRM_BASE = "https://router.project-osrm.org/route/v1/driving";
 
 function getDistance(a, b) {
@@ -35,17 +35,17 @@ export default function useRouting(mapRef, ambulanceStateRef) {
   const reroutingRef = useRef([]);
   const roadBlocksRef = useRef([]);
 
-  
+
   const fetchRoute = async (from, to, blocks = []) => {
     let waypoints = [from, to];
 
-    
+
     if (blocks.length > 0) {
-      const block = blocks[0]; 
+      const block = blocks[0];
       const dx = to.lng - from.lng;
       const dy = to.lat - from.lat;
       const len = Math.hypot(dx, dy);
-      
+
       const perp = {
         lng: block.lng + (-dy / len) * 0.003,
         lat: block.lat + (dx / len) * 0.003,
@@ -107,7 +107,7 @@ export default function useRouting(mapRef, ambulanceStateRef) {
 
       const rot = bearing(prev, next);
       ambulanceStateRef.current[index] = { ...amb, lngLat: pos, rotation: rot, visible: true };
-      
+
       trails.current[index].push(pos);
       const source = map.getSource(trailId);
       if (source) {
@@ -145,7 +145,7 @@ export default function useRouting(mapRef, ambulanceStateRef) {
         };
 
         const result = await fetchRoute(currentPos, mission.originalTo, blocks);
-        
+
         map.getSource(mission.routeId)?.setData({
           type: "Feature",
           geometry: { type: "LineString", coordinates: result.coords },
@@ -154,7 +154,7 @@ export default function useRouting(mapRef, ambulanceStateRef) {
         trails.current[i] = [result.coords[0]];
         const dists = buildDistances(result.coords);
         ambulanceStateRef.current[i].paused = false;
-        
+
         animateAmbulance(result.coords, dists, dists[dists.length - 1], i, mission.trailId);
       } catch (err) {
         console.error("OSRM Reroute Fail:", err);
@@ -163,7 +163,7 @@ export default function useRouting(mapRef, ambulanceStateRef) {
     }
   }, []);
 
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (!roadBlocksRef.current.length) return;
