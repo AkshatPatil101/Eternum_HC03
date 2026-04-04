@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { useHospitalsDynamic, useEquipmentAvailability } from '../../src/hooks/useSupabaseRealtime';
 import supabase from '../../src/lib/supabase';
 
@@ -37,6 +38,11 @@ const HospitalAdmin = () => {
             .eq('hospital_id', 'H01')
             .eq('equipment', 'ventilator');
     };
+=======
+
+const HospitalAdmin = () => {
+    const navigate = useNavigate();
+>>>>>>> 180928da5bb382757cf6a4112bd0952c4106e4d8
 
     return (
         <div className="bg-surface font-body text-on-surface">
@@ -73,6 +79,7 @@ const HospitalAdmin = () => {
                     <div>
                         <h1 className="font-headline font-extrabold text-4xl text-primary tracking-tight mb-2">Central Operations</h1>
                         <p className="text-on-surface-variant font-medium">Facility ID: SENT-PRIME-01 • Sector: North Wing</p>
+<<<<<<< HEAD
                         {myHospital && Object.keys(myHospital).length > 0 && (
                             <div className="mt-2 text-sm bg-green-100 text-green-800 px-3 py-1 inline-flex rounded-full border border-green-300 items-center gap-2">
                                 <span className="relative flex h-3 w-3">
@@ -87,6 +94,8 @@ const HospitalAdmin = () => {
                                 <b>Live DB Status:</b> Waiting for Supabase Database Broadcasts...
                             </div>
                         )}
+=======
+>>>>>>> 180928da5bb382757cf6a4112bd0952c4106e4d8
                     </div>
                     <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-3 min-w-[320px]">
                         <div className="flex justify-between items-center">
@@ -112,22 +121,40 @@ const HospitalAdmin = () => {
                         <div className="flex flex-col gap-6">
                             <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
                                 <div>
+<<<<<<< HEAD
                                     <p className="font-label text-[0.7rem] uppercase tracking-wider text-on-surface-variant">General Beds (Free)</p>
                                     <p className="font-headline font-bold text-2xl">{myHospital.general_beds_free !== undefined ? myHospital.general_beds_free : '--'}</p>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <button onClick={() => updateBedCount('general', -1)} className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-primary hover:bg-secondary-fixed transition-all active:scale-90"><span className="material-symbols-outlined">remove</span></button>
                                     <button onClick={() => updateBedCount('general', 1)} className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all active:scale-90"><span className="material-symbols-outlined">add</span></button>
+=======
+                                    <p className="font-label text-[0.7rem] uppercase tracking-wider text-on-surface-variant">Level 1 Trauma</p>
+                                    <p className="font-headline font-bold text-2xl">08</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-primary hover:bg-secondary-fixed transition-all"><span className="material-symbols-outlined">remove</span></button>
+                                    <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all"><span className="material-symbols-outlined">add</span></button>
+>>>>>>> 180928da5bb382757cf6a4112bd0952c4106e4d8
                                 </div>
                             </div>
                             <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
                                 <div>
+<<<<<<< HEAD
                                     <p className="font-label text-[0.7rem] uppercase tracking-wider text-on-surface-variant">ICU Beds (Free)</p>
                                     <p className="font-headline font-bold text-2xl">{myHospital.icu_beds_free !== undefined ? myHospital.icu_beds_free : '--'}</p>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <button onClick={() => updateBedCount('icu', -1)} className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-primary hover:bg-secondary-fixed transition-all active:scale-90"><span className="material-symbols-outlined">remove</span></button>
                                     <button onClick={() => updateBedCount('icu', 1)} className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all active:scale-90"><span className="material-symbols-outlined">add</span></button>
+=======
+                                    <p className="font-label text-[0.7rem] uppercase tracking-wider text-on-surface-variant">Pediatric ICU</p>
+                                    <p className="font-headline font-bold text-2xl">03</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-primary hover:bg-secondary-fixed transition-all"><span className="material-symbols-outlined">remove</span></button>
+                                    <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all"><span className="material-symbols-outlined">add</span></button>
+>>>>>>> 180928da5bb382757cf6a4112bd0952c4106e4d8
                                 </div>
                             </div>
                         </div>
@@ -141,6 +168,7 @@ const HospitalAdmin = () => {
                             <h2 className="font-headline font-bold text-xl">Ventilators</h2>
                         </div>
                         <div className="space-y-6">
+<<<<<<< HEAD
                             <div className="flex justify-between items-center bg-surface-container-low p-2 rounded-xl">
                                 <span className="font-medium text-on-surface px-2">Active Units</span>
                                 <div className="flex items-center gap-4 bg-surface-container-lowest p-1 rounded-lg">
@@ -148,6 +176,11 @@ const HospitalAdmin = () => {
                                     <span className="font-headline font-bold text-2xl min-w-[2rem] text-center">{myEquipment ? ventilatorCount : '--'}</span>
                                     <button onClick={() => updateVentilatorCount(1)} className="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-on-primary hover:bg-primary-container transition-all active:scale-90"><span className="material-symbols-outlined text-sm">add</span></button>
                                 </div>
+=======
+                            <div className="flex justify-between items-center">
+                                <span className="font-medium text-on-surface">Active Units</span>
+                                <span className="font-headline font-bold text-2xl">24</span>
+>>>>>>> 180928da5bb382757cf6a4112bd0952c4106e4d8
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="font-medium text-on-surface">Reservist Mode</span>
