@@ -265,24 +265,24 @@ const PatientIntakeDashboard = () => {
 
 
 
-  // Vitals State
+  
   const [heartRate, setHeartRate] = useState("");
   const [bpSystolic, setBpSystolic] = useState("");
   const [bpDiastolic, setBpDiastolic] = useState("");
   const [spo2, setSpo2] = useState("");
   
-  // Additional Data Points
+  
   const [gcs, setGcs] = useState("");
   const [temp, setTemp] = useState("");
   const [rr, setRr] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState("0"); // 0 for Male, 1 for Female (standardized)
+  const [gender, setGender] = useState("0"); 
 
-  // Compiled Data Object
+  
   const [ptData, setPtData] = useState({});
 
   useEffect(() => {
-    // Map human-readable symptoms to snake_case keys
+    
     const symptomKeyMap = {
       "Pupils Unequal": "pupils_unequal",
       "Chest Pain": "chest_pain",
@@ -303,7 +303,7 @@ const PatientIntakeDashboard = () => {
 
     const symptomMap = {};
     availableSymptoms.forEach(sym => {
-      const key = symptomKeyMap[sym]; // Use exact snake_case key
+      const key = symptomKeyMap[sym]; 
       symptomMap[key] = selectedSymptoms.includes(sym) ? 1 : 0;
     });
 
@@ -333,7 +333,7 @@ const PatientIntakeDashboard = () => {
     );
   };
 
-// inside PatientIntakeDashboard
+
 async function sendTriageData(patientData) {
   try {
     const response = await fetch("http://localhost:8000/triage", {
@@ -344,20 +344,20 @@ async function sendTriageData(patientData) {
 
     const result = await response.json();
     
-    // Check nested structure from your ML service
+    
     if (!result || !result.hospitals || !result.hospitals.matched_hospitals) {
       console.error("Invalid response format", result);
       return;
     }
 
-    // 1. GENERATE RANDOM START ON EVERY CLICK
-    // This creates a different mission origin within your specified Pune bounds
+    
+    
     const freshLat = 18.5194 + (Math.random() * 0.04 - 0.02);
     const freshLng = 73.8519 + (Math.random() * 0.008 - 0.004);
 
-    // Update state so the UI (and ptData for next time) knows the new "current" location
+    
 
-    // 2. DISTANCE HELPER (Haversine)
+    
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
       const R = 6371; 
       const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -367,8 +367,8 @@ async function sendTriageData(patientData) {
       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     };
 
-    // 3. MAP AND RE-SORT BY PROXIMITY
-    // Even if ML suggests a hierarchy, we find the closest one to our NEW random point
+    
+    
     const enrichedHospitals = result.hospitals.matched_hospitals.map(hospital => {
       const localData = HOSPITALS_PUNE.find(h => h.id === hospital.hospital_id);
       return {
@@ -383,7 +383,7 @@ async function sendTriageData(patientData) {
     enrichedHospitals.sort((a, b) => a.dist_km - b.dist_km);
     const bestChoice = enrichedHospitals[0];
 
-    // 4. DISPATCH PAYLOAD
+    
     const dispatchPayload = {
       result:result,
       hospital_name: bestChoice.mapped_to,
@@ -398,7 +398,7 @@ async function sendTriageData(patientData) {
 
     console.log(`🚀 New Mission: ${freshLat.toFixed(4)}, ${freshLng.toFixed(4)} -> ${bestChoice.mapped_to}`);
 
-    // 5. SEND TO WEBSOCKET DISPATCHER (Port 8080)
+    
     await fetch("http://localhost:8080/dispatch-route", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -413,7 +413,6 @@ async function sendTriageData(patientData) {
 
   return (
     <div className="bg-surface text-on-surface min-h-screen font-body">
-      {/* Top NavBar */}
       <header className="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl shadow-sm flex justify-between items-center px-6 py-3">
         <div className="flex items-center gap-8">
           <div className="text-lg font-bold tracking-tighter text-slate-900">Clinical Architect</div>
@@ -434,7 +433,6 @@ async function sendTriageData(patientData) {
         </div>
       </header>
 
-      {/* Side NavBar */}
       <aside className="h-screen w-64 fixed left-0 top-0 pt-16 flex flex-col gap-2 p-4 border-r border-slate-200 bg-slate-100">
         <div className="flex items-center gap-3 px-2 py-4 mb-4">
           <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg">
@@ -453,7 +451,7 @@ async function sendTriageData(patientData) {
         <button className="mt-4 mb-6 w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary-container text-white font-headline text-[11px] uppercase tracking-widest font-bold shadow-lg active:scale-95 transition-transform">New Dispatch</button>
       </aside>
 
-      {/* Main Content */}
+      
       <main className="ml-64 pt-20 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-10">
@@ -467,21 +465,21 @@ async function sendTriageData(patientData) {
 
           <div className="grid grid-cols-12 gap-8">
             <div className="col-span-12 lg:col-span-8 space-y-8">
-              {/* Primary Vitals Row */}
+              
               <div className="grid grid-cols-3 gap-6">
                 <VitalsCard label="BPM" value={heartRate} setValue={setHeartRate} icon="favorite" iconColor="text-error" />
                 <BloodPressureCard sys={bpSystolic} dia={bpDiastolic} setSys={setBpSystolic} setDia={setBpDiastolic} />
                 <VitalsCard label="% SpO2" value={spo2} setValue={setSpo2} icon="air" iconColor="text-blue-500" />
               </div>
 
-              {/* Secondary Metrics Row (The Missing Stuff) */}
+              
               <div className="grid grid-cols-3 gap-6">
                 <VitalsCard label="GCS" value={gcs} setValue={setGcs} icon="psychology" iconColor="text-purple-500" />
                 <VitalsCard label="Temp °C" value={temp} setValue={setTemp} icon="thermostat" iconColor="text-orange-500" />
                 <VitalsCard label="RR (Resp)" value={rr} setValue={setRr} icon="potted_plant" iconColor="text-teal-500" />
               </div>
 
-              {/* Patient Profile Info */}
+              
               <div className="bg-white p-6 rounded-xl border border-outline-variant/15 flex gap-6 items-end">
                 <div className="flex-1">
                   <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Patient Age</label>
@@ -501,7 +499,7 @@ async function sendTriageData(patientData) {
                 </div>
               </div>
 
-              {/* Symptoms */}
+             
               <div className="bg-surface-container-low p-8 rounded-xl">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-primary tracking-tight">Quick Select Symptoms</h2>

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 const IMAGES = [
-    "https://science.thewire.in/wp-content/uploads/2020/07/Doctors-PTI.jpg", // Direct image from the Wire article provided
+    "https://science.thewire.in/wp-content/uploads/2020/07/Doctors-PTI.jpg", 
     "https://content.jdmagicbox.com/comp/solapur/n9/9999px217.x217.161020133114.v4n9/catalogue/hrudayam-superspeciality-hospital-and-research-center-hshrc--solapur-city-solapur-hospitals-0gcl3ik6b6.jpg",
     "https://www.nicepng.com/png/full/33-336282_best-doctors-india-indian-doctor-and-nurse.png",
     "https://c7.alamy.com/comp/2K73C83/bedside-consultation-at-modern-hospital-senior-woman-lying-on-hospital-bed-in-ward-while-consultation-with-friendly-indian-doctor-and-caring-nurse-2K73C83.jpg"

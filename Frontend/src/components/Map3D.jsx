@@ -31,7 +31,6 @@ function createCrossIcon(size = 32) {
   return ctx.getImageData(0, 0, size, size);
 }
 
-/** Creates a fixed-size DOM element for a roadblock marker */
 function createRoadblockElement() {
   const el = document.createElement("div");
   el.style.cssText = `
@@ -58,7 +57,7 @@ export default function Map3D() {
   const mapRef = useRef(null);
   const wsRef = useRef(null);
   const ambulanceStateRef = useRef([]);
-  // roadblock markers stored as { lngLat, marker } objects
+  
   const roadBlockMarkersRef = useRef([]);
 
   const { drawRoute, clearRoute, applyRoadBlocks, status } = useRouting(
@@ -145,11 +144,11 @@ export default function Map3D() {
       );
     });
 
-    // ===== ROADBLOCK CLICK LISTENER — fixed-size DOM markers =====
+    
     map.on("click", (e) => {
       const lngLat = { lng: e.lngLat.lng, lat: e.lngLat.lat };
 
-      // Create a fixed-size DOM marker (never scales with zoom)
+      
       const el = createRoadblockElement();
       const marker = new maplibregl.Marker({ element: el, anchor: "center" })
         .setLngLat([lngLat.lng, lngLat.lat])
@@ -157,7 +156,7 @@ export default function Map3D() {
 
       roadBlockMarkersRef.current.push({ lngLat, marker });
 
-      // Trigger reroute with all current blocks
+      
       const blocks = roadBlockMarkersRef.current.map((b) => b.lngLat);
       if (applyRoadBlocksRef.current) {
         applyRoadBlocksRef.current(blocks);
@@ -251,7 +250,7 @@ export default function Map3D() {
 
   function handleClear() {
     clearRoute();
-    // Remove all roadblock DOM markers
+    
     roadBlockMarkersRef.current.forEach(({ marker }) => marker.remove());
     roadBlockMarkersRef.current = [];
   }
