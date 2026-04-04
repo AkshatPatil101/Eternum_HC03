@@ -25,7 +25,7 @@ app.post("/dispatch-route", (req, res) => {
   console.log("Received HTTP Request. Preparing to forward to WebSocket...");
 
   res.status(202).json({ message: "Data received. Queuing for WebSocket push in 4s." });
-
+  console.log(incomingData)
   setTimeout(() => {
     const payload = JSON.stringify(incomingData);
     
