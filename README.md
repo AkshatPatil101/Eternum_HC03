@@ -12,13 +12,9 @@
 [![MapLibre](https://img.shields.io/badge/MapLibre--GL-3D--Map-8B5CF6?style=for-the-badge)](https://maplibre.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-**A real-time AI dispatch system that predicts what a patient needs before arrival and routes the ambulance to the nearest hospital that is actually capable of treating them - right now.**
-
-</div>
-
-<div align="center">
-
 ![Sentinel AI - Ignisia Platform](sentinel.png)
+
+**A real-time AI dispatch system that predicts what a patient needs before arrival and routes the ambulance to the nearest hospital that is actually capable of treating them - right now.**
 
 </div>
 
